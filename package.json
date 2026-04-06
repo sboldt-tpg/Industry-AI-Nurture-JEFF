@@ -1,0 +1,13 @@
+{
+  "name": "industry-ai-nurture-jeff-pedowitz",
+  "version": "1.0.0",
+  "description": "Industry-specific AI email nurture sequence — Jeff Pedowitz / The Pedowitz Group",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0"
+  }
+}
