@@ -1,0 +1,202 @@
+# Industry AI Nurture — Jeff Pedowitz
+### The Pedowitz Group
+
+A Node.js server that generates personalized 10-email outbound nurture sequences using Claude AI, powered by HubSpot contact data. Each email is written as Jeff Pedowitz, tailored to the contact's specific industry, company news, and behavioral signals.
+
+---
+
+## What It Does
+
+- Receives contact data from a HubSpot workflow via webhook
+- Scrapes the contact's company website for recent news and blog content
+- Resolves the contact's HubSpot `industry` property to a detailed industry persona
+- Calls the Anthropic API (Claude Sonnet) to generate a personalized email
+- Writes the subject line, HTML body, and plain text back to HubSpot contact properties
+- Processes up to 6 contacts simultaneously with a persistent domain cache and full error logging
+
+---
+
+## Tech Stack
+
+- **Runtime:** Node.js
+- **Framework:** Express
+- **HTTP:** Axios
+- **AI:** Anthropic Claude (`claude-sonnet-4-20250514`)
+- **CRM:** HubSpot CRM API
+- **Hosting:** Render ($7/month always-on plan)
+
+---
+
+## Environment Variables
+
+Set these in Render's Environment settings before deploying:
+
+| Variable | Description |
+|---|---|
+| `HUBSPOT_TOKEN` | HubSpot private app token with contacts read/write scope |
+| `ANTHROPIC_API_KEY` | Anthropic API key (Tier 4 recommended for 10k+ contacts) |
+| `PORT` | Set automatically by Render — do not override |
+
+---
+
+## HubSpot Contact Properties Required
+
+Create these custom contact properties in HubSpot before running:
+
+**Single-line text (x10):**
+`tpg_industry_nurture_subject_line_em1` through `tpg_industry_nurture_subject_line_em10`
+
+**Rich text / HTML (x10):**
+`tpg_industry_nurture_em1` through `tpg_industry_nurture_em10`
+
+**Multi-line text (x9 — used for non-repetition logic):**
+`tpg_industry_nurture_claude_text_em1` through `tpg_industry_nurture_claude_text_em9`
+
+**Single-line text (existing):**
+`ai_email_step_status` — tracks job state (IN_PROGRESS, SENT, RETRY_PENDING, FAILED)
+
+---
+
+## HubSpot Workflow Setup
+
+Each sequence step (1–10) needs its own custom code action in HubSpot. The only thing that changes between steps is `SEQUENCE_STEP`.
+
+```javascript
+const axios = require('axios');
+exports.main = async (event, callback) => {
+  const RENDER_URL = 'https://YOUR-APP.onrender.com/enqueue';
+  const SEQUENCE_STEP = 1; // ← Change per step: 1 through 10
+
+  const safe = v => (v ?? '').toString().trim();
+
+  const contactData = {
+    contactId: event.object.objectId,
+    sequenceStep: SEQUENCE_STEP,
+    firstname: safe(event.inputFields['firstname']),
+    company: safe(event.inputFields['company']),
+    jobtitle: safe(event.inputFields['jobtitle']),
+    industry: safe(event.inputFields['industry']),
+    numemployees: safe(event.inputFields['numemployees']),
+    annualrevenue: safe(event.inputFields['annualrevenue']),
+    hs_linkedin_url: safe(event.inputFields['hs_linkedin_url']),
+    website: safe(
+      event.inputFields['website'] ||
+      event.inputFields['domain'] ||
+      event.inputFields['company_domain'] ||
+      event.inputFields['hs_company_domain']
+    ),
+    hs_intent_signals_enabled: safe(event.inputFields['hs_intent_signals_enabled']),
+    web_technologies: safe(event.inputFields['web_technologies']),
+    description: safe(event.inputFields['description']),
+    hs_analytics_last_url: safe(event.inputFields['hs_analytics_last_url']),
+    hs_analytics_num_page_views: safe(event.inputFields['hs_analytics_num_page_views']),
+    tpg_industry_nurture_claude_text_em1: safe(event.inputFields['tpg_industry_nurture_claude_text_em1']),
+    tpg_industry_nurture_claude_text_em2: safe(event.inputFields['tpg_industry_nurture_claude_text_em2']),
+    tpg_industry_nurture_claude_text_em3: safe(event.inputFields['tpg_industry_nurture_claude_text_em3']),
+    tpg_industry_nurture_claude_text_em4: safe(event.inputFields['tpg_industry_nurture_claude_text_em4']),
+    tpg_industry_nurture_claude_text_em5: safe(event.inputFields['tpg_industry_nurture_claude_text_em5']),
+    tpg_industry_nurture_claude_text_em6: safe(event.inputFields['tpg_industry_nurture_claude_text_em6']),
+    tpg_industry_nurture_claude_text_em7: safe(event.inputFields['tpg_industry_nurture_claude_text_em7']),
+    tpg_industry_nurture_claude_text_em8: safe(event.inputFields['tpg_industry_nurture_claude_text_em8']),
+    tpg_industry_nurture_claude_text_em9: safe(event.inputFields['tpg_industry_nurture_claude_text_em9'])
+  };
+
+  try {
+    const response = await axios.post(RENDER_URL, contactData, { timeout: 10000 });
+    callback({
+      outputFields: {
+        queue_status: 'queued',
+        queue_position: response.data.queuePosition || 0
+      }
+    });
+  } catch (error) {
+    callback({
+      outputFields: { queue_status: 'error', queue_position: 0 }
+    });
+  }
+};
+```
+
+---
+
+## 10-Step Sequence Map
+
+| Step | Pillar | Service |
+|---|---|---|
+| 1 | AI Systems & Automation | AI Agents and Automation |
+| 2 | AI Strategy & Innovation | AI Roadmap Accelerator |
+| 3 | AI Intelligence & Personalization | AI-Driven Personalization |
+| 4 | AI Systems & Automation | Marketing Operations Automation |
+| 5 | Strategy | Revenue Marketing Transformation |
+| 6 | Operations | Revenue Operations |
+| 7 | Technology Consulting | HubSpot Services |
+| 8 | AI Intelligence | Data and Decision Intelligence |
+| 9 | Managed Services & Creative | Demand Generation |
+| 10 | Revenue Marketing Transformation | Meeting close |
+
+---
+
+## Industry Personas
+
+The server resolves the HubSpot `industry` property to one of 19 built-in vertical personas. Each persona contains industry-specific pain points, AI opportunity narrative, benchmark stats, tone guidance, and opening hook scenarios.
+
+**Supported verticals:**
+Technology, Computer Software, Internet/Digital, Financial Services, Banking, Insurance, Healthcare, Biotechnology, Pharmaceuticals, Industrial Automation/Manufacturing, Machinery, Management Consulting, Accounting, Retail, Media & Entertainment, Higher Education, Staffing & Recruiting, Real Estate, Telecommunications, Nonprofit
+
+Unmatched industries fall back to a DEFAULT B2B persona. The resolver runs three passes: exact match → partial match → reverse partial match → DEFAULT.
+
+---
+
+## Endpoints
+
+| Endpoint | Description |
+|---|---|
+| `GET /` | Health check — returns queue length, in-flight count, error count, domains cached, contacts completed |
+| `GET /dashboard` | Live queue monitor — auto-refreshes every 5 seconds |
+| `GET /errors` | Error log viewer — shows all permanent failures with contact ID, step, error message, and timestamp |
+| `POST /enqueue` | Receives contact payloads from HubSpot workflow |
+
+---
+
+## Persistent Files (Render /tmp)
+
+| File | Purpose |
+|---|---|
+| `/tmp/domain_cache.json` | Scraped company website data — 7 day TTL, survives restarts |
+| `/tmp/completed.log` | Record of every successfully processed contact — prevents re-processing on restart |
+| `/tmp/errors.log` | Record of every permanent failure — viewable at `/errors` |
+
+---
+
+## Processing Speed
+
+| Setting | Jobs/min | 10k contacts |
+|---|---|---|
+| CONCURRENCY 3, interval 1500ms | ~22 | ~7.5 hours |
+| CONCURRENCY 6, interval 1000ms | ~42 | ~4 hours |
+| CONCURRENCY 7, interval 1000ms | ~52 | ~3 hours |
+
+**Current setting:** CONCURRENCY 6, PROCESS_INTERVAL_MS 1000 (~4 hours for 10k contacts)
+
+---
+
+## Deployment
+
+1. Push `server.js` and `package.json` to a GitHub repo
+2. Create a new Web Service on Render, connect the repo
+3. Set environment variables (`HUBSPOT_TOKEN`, `ANTHROPIC_API_KEY`)
+4. Deploy — Render runs `node server.js` automatically
+5. Copy your Render URL into the HubSpot custom code steps
+6. Enroll contacts in the HubSpot workflow
+
+---
+
+## Adding a New Industry Persona
+
+1. Find the `INDUSTRY_PERSONAS` object in `server.js`
+2. Copy an existing persona block
+3. Change the key to match the normalized HubSpot industry value (uppercase, underscores, no special characters)
+4. Rewrite the 5 pain points, AI opportunity, stats, tone note, and opening hooks for the new vertical
+5. Redeploy
+
+To find unmapped industries in your database: HubSpot → Contacts → filter by Industry → export and count distinct values. Any industry falling through to DEFAULT will appear in the server logs as `⚠️ No industry match for: "X". Using DEFAULT.`
