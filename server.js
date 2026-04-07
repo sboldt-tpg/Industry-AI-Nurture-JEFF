@@ -18,13 +18,11 @@ const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
 // =============================
 // PERSISTENT DOMAIN CACHE
-// Survives Render restarts. Scrape each domain once, reuse for 7 days.
-// Stored at /tmp/domain_cache.json — persists across restarts on Render $7 plan.
 // =============================
 const CACHE_FILE = path.join('/tmp', 'domain_cache.json');
 const COMPLETED_LOG = path.join('/tmp', 'completed.log');
 const ERROR_LOG = path.join('/tmp', 'errors.log');
-const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 let domainCache = new Map();
 
@@ -59,7 +57,6 @@ function saveCacheToDisk() {
   }
 }
 
-// Load completed contact IDs from log so we can skip re-runs
 function loadCompletedIds() {
   const ids = new Set();
   try {
@@ -696,7 +693,7 @@ function resolveIndustryPersona(industry) {
 let queue = [];
 let inFlight = 0;
 let errorCount = 0;
-const processingIds = new Set(); // duplicate guard
+const processingIds = new Set();
 
 // =============================
 // HUBSPOT PATCH WITH RETRY
@@ -713,7 +710,13 @@ async function hubspotPatch(url, data, retries = 3) {
       });
       return;
     } catch (err) {
-      if (i === retries - 1) throw err;
+      if (i === retries - 1) {
+        // Log full HubSpot error body before throwing
+        if (err.response?.data) {
+          console.error(`HubSpot error detail:`, JSON.stringify(err.response.data));
+        }
+        throw err;
+      }
       const wait = (i + 1) * 2000;
       console.log(`⚠️ HubSpot PATCH failed (attempt ${i + 1}), retrying in ${wait}ms — ${err.message}`);
       await new Promise(r => setTimeout(r, wait));
@@ -723,7 +726,6 @@ async function hubspotPatch(url, data, retries = 3) {
 
 // =============================
 // ERROR LOG VIEWER
-// Hit /errors in your browser to see all permanent failures
 // =============================
 app.get("/errors", (req, res) => {
   try {
@@ -845,7 +847,6 @@ app.post("/enqueue", (req, res) => {
   const job = { ...req.body, retries: 0 };
   const key = `${job.contactId}_${job.sequenceStep}`;
 
-  // Skip if already completed in a previous run
   if (completedIds.has(key)) {
     console.log(`⏭️ Already completed, skipping: ${key}`);
     return res.status(200).json({ status: "skipped", reason: "already_completed" });
@@ -861,7 +862,6 @@ app.post("/enqueue", (req, res) => {
 async function processJob(job) {
   const key = `${job.contactId}_${job.sequenceStep}`;
 
-  // Duplicate guard — skip if already being processed right now
   if (processingIds.has(key)) {
     console.log(`⚠️ Duplicate in-flight, skipping: ${key}`);
     inFlight--;
@@ -875,7 +875,6 @@ async function processJob(job) {
     await writeResults(job.contactId, result, job.sequenceStep || 1);
     await updateStatus(job.contactId, "SENT");
 
-    // Mark complete in memory and on disk
     completedIds.add(key);
     logCompleted(job.contactId, job.sequenceStep);
 
@@ -884,7 +883,6 @@ async function processJob(job) {
     console.error(`❌ Error for ${job.contactId}:`, err.message);
 
     if (err.response?.status === 429) {
-      // Rate limited — requeue at the FRONT with a delay so it retries soon
       const retryAfter = (parseInt(err.response.headers['retry-after']) || 60) * 1000;
       console.log(`⏳ Rate limited, requeuing ${job.contactId} in ${retryAfter}ms`);
       setTimeout(() => queue.unshift(job), retryAfter);
@@ -1066,7 +1064,6 @@ async function runClaude(job) {
     ? "Buyer intent signals are ACTIVE for this account."
     : "No active intent signals.";
 
-  // Behavioral signals
   let behavioralContext = '';
   const pageViews = parseInt(hs_analytics_num_page_views) || 0;
   const lastUrl = (hs_analytics_last_url || '').trim();
@@ -1088,15 +1085,14 @@ async function runClaude(job) {
     }
   }
 
-  // Prior emails
+  // Prior emails — uses corrected property prefix
   const priorEmailsText = [];
   for (let i = 1; i < SEQUENCE_STEP; i++) {
-    const field = job[`tpg_industry_nurture_claude_text_em${i}`];
+    const field = job[`industry_ai_nurture_claude_text_em${i}`];
     if (field) priorEmailsText.push(`EMAIL ${i}:\n${field}`);
   }
   const priorEmailsBlock = priorEmailsText.length ? priorEmailsText.join("\n\n---\n\n") : "N/A";
 
-  // Company intelligence
   let companyNewsBlock = null;
   let companyContentBlock = null;
   if (website) {
@@ -1276,10 +1272,10 @@ Body:
 
 // =============================
 // HUBSPOT WRITE-BACK
-// Required custom contact properties:
-//   tpg_industry_nurture_subject_line_em1 through em10  (single-line text)
-//   tpg_industry_nurture_em1 through em10               (rich text / HTML)
-//   tpg_industry_nurture_claude_text_em1 through em9    (multi-line text)
+// Properties (confirmed names):
+//   industry_ai_nurture_subject_line_em1  through em10  (single-line text)
+//   industry_ai_nurture_em1               through em10  (rich text / HTML)
+//   industry_ai_nurture_claude_text_em1   through em9   (multi-line text)
 // =============================
 async function writeResults(contactId, { subject, bodyText }, sequenceStep = 1) {
   const bodyHtml = bodyText
@@ -1292,9 +1288,9 @@ async function writeResults(contactId, { subject, bodyText }, sequenceStep = 1) 
     `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}`,
     {
       properties: {
-        [`tpg_industry_nurture_subject_line_em${sequenceStep}`]: subject,
-        [`tpg_industry_nurture_em${sequenceStep}`]: bodyHtml,
-        [`tpg_industry_nurture_claude_text_em${sequenceStep}`]: bodyText
+        [`industry_ai_nurture_subject_line_em${sequenceStep}`]: subject,
+        [`industry_ai_nurture_em${sequenceStep}`]: bodyHtml,
+        [`industry_ai_nurture_claude_text_em${sequenceStep}`]: bodyText
       }
     }
   );
@@ -1310,7 +1306,8 @@ async function updateStatus(contactId, status) {
       { properties: { ai_email_step_status: status } }
     );
   } catch (err) {
-    console.error(`Status update failed for ${contactId}:`, err.message);
+    // Non-fatal — property may not exist, log and continue
+    console.log(`ℹ️ Status update skipped for ${contactId}: ${err.response?.data?.message || err.message}`);
   }
 }
 
