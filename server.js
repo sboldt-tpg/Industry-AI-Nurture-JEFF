@@ -10,8 +10,8 @@ app.use(express.json());
 // CONFIG
 // =============================
 const MAX_SUBJECT_RETRIES = 3;
-const PROCESS_INTERVAL_MS = 1000;
-const CONCURRENCY = 8;
+const PROCESS_INTERVAL_MS = 500;
+const CONCURRENCY = 12;
 
 const HUBSPOT_TOKEN = process.env.HUBSPOT_TOKEN;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
@@ -117,7 +117,11 @@ const SEQUENCE_MAP = [
     offer: "AI Agent Discovery Tool",
     offerUrl: "https://www.pedowitzgroup.com/agentic-ai",
     angle: "pipeline_predictability",
-    talkingPoint: "Deploy intelligent agents across marketing, sales, and support to automate workflows, personalize interactions, and surface revenue signals before your team even knows to look for them."
+    talkingPoint: "Deploy intelligent agents across marketing, sales, and support to automate workflows, personalize interactions, and surface revenue signals before your team even knows to look for them.",
+    ctaType: "meeting",
+    wordCount: "75 to 110",
+    openingStyle: "observation",
+    reEngagementNote: null
   },
   {
     step: 2,
@@ -127,7 +131,11 @@ const SEQUENCE_MAP = [
     offer: "AI Readiness Assessment",
     offerUrl: "https://www.pedowitzgroup.com/ai-assessment",
     angle: "martech_roi",
-    talkingPoint: "Before investing deeper in AI tools, most marketing leaders need a clear prioritized roadmap that connects AI investments to revenue outcomes rather than experiments that fade after 90 days."
+    talkingPoint: "Before investing deeper in AI tools, most marketing leaders need a clear prioritized roadmap that connects AI investments to revenue outcomes rather than experiments that fade after 90 days.",
+    ctaType: "meeting",
+    wordCount: "75 to 110",
+    openingStyle: "observation",
+    reEngagementNote: null
   },
   {
     step: 3,
@@ -137,7 +145,11 @@ const SEQUENCE_MAP = [
     offer: "Revenue Marketing Maturity Assessment",
     offerUrl: "https://www.pedowitzgroup.com/revenue-marketing-maturity-assessment",
     angle: "lead_quality",
-    talkingPoint: "Most buyers now complete 70 to 80% of their research before ever talking to sales. AI-driven personalization lets you meet them in the moment with the right message on the right channel before the competition does."
+    talkingPoint: "Most buyers now complete 70 to 80% of their research before ever talking to sales. AI-driven personalization lets you meet them in the moment with the right message on the right channel before the competition does.",
+    ctaType: "content",
+    wordCount: "40 to 65",
+    openingStyle: "question",
+    reEngagementNote: null
   },
   {
     step: 4,
@@ -147,7 +159,11 @@ const SEQUENCE_MAP = [
     offer: "AI Project Prioritization Tool",
     offerUrl: "https://www.pedowitzgroup.com/tpg-ai-project-prioritization",
     angle: "team_capacity",
-    talkingPoint: "Marketing ops teams are buried in manual work that AI should be doing: lead routing, data hygiene, segmentation, campaign QA. When that overhead disappears your team shifts from execution to strategy."
+    talkingPoint: "Marketing ops teams are buried in manual work that AI should be doing: lead routing, data hygiene, segmentation, campaign QA. When that overhead disappears your team shifts from execution to strategy.",
+    ctaType: "meeting",
+    wordCount: "40 to 65",
+    openingStyle: "question",
+    reEngagementNote: null
   },
   {
     step: 5,
@@ -157,7 +173,11 @@ const SEQUENCE_MAP = [
     offer: "Revenue Marketing Index 2025",
     offerUrl: "https://www.pedowitzgroup.com/revenue-marketing-index-start",
     angle: "pipeline_predictability",
-    talkingPoint: "TPG's RM6 framework refined across 14 years and 1,300 plus clients is the blueprint for turning marketing from a cost center into a predictable scalable revenue engine connecting strategy, technology, creative, and operations into one accountable motion."
+    talkingPoint: "TPG's RM6 framework refined across 14 years and 1,300 plus clients is the blueprint for turning marketing from a cost center into a predictable scalable revenue engine connecting strategy, technology, creative, and operations into one accountable motion.",
+    ctaType: "content",
+    wordCount: "40 to 65",
+    openingStyle: "question",
+    reEngagementNote: "This is email 5 of 10. Acknowledge in one confident sentence — not apologetically — that you have sent a few notes and have not heard back. Then move on without dwelling on it. Do not apologize. Do not beg."
   },
   {
     step: 6,
@@ -167,7 +187,11 @@ const SEQUENCE_MAP = [
     offer: "Revenue Marketing Maturity Assessment",
     offerUrl: "https://www.pedowitzgroup.com/revenue-marketing-maturity-assessment-survey",
     angle: "attribution",
-    talkingPoint: "When marketing, sales, and customer success operate off different data and different definitions attribution breaks down and the CFO questions your budget. RevOps alignment closes that gap and makes every dollar accountable."
+    talkingPoint: "When marketing, sales, and customer success operate off different data and different definitions attribution breaks down and the CFO questions your budget. RevOps alignment closes that gap and makes every dollar accountable.",
+    ctaType: "reply",
+    wordCount: "40 to 65",
+    openingStyle: "question",
+    reEngagementNote: null
   },
   {
     step: 7,
@@ -177,7 +201,11 @@ const SEQUENCE_MAP = [
     offer: "HubSpot ROI Calculator",
     offerUrl: "https://www.pedowitzgroup.com/roi",
     angle: "martech_roi",
-    talkingPoint: "Most organizations use fewer than 60% of their MarTech capabilities. Whether you're on HubSpot or evaluating a migration TPG's technology consulting practice gets your stack generating revenue instead of generating tickets."
+    talkingPoint: "Most organizations use fewer than 60% of their MarTech capabilities. Whether you're on HubSpot or evaluating a migration TPG's technology consulting practice gets your stack generating revenue instead of generating tickets.",
+    ctaType: "content",
+    wordCount: "40 to 65",
+    openingStyle: "question",
+    reEngagementNote: null
   },
   {
     step: 8,
@@ -187,7 +215,11 @@ const SEQUENCE_MAP = [
     offer: "Marketing Automation Migration ROI Calculator",
     offerUrl: "https://www.pedowitzgroup.com/marketing-automation-roi-calculator",
     angle: "attribution",
-    talkingPoint: "Disconnected data is the silent killer of marketing ROI. When your CRM, MAP, and product analytics don't talk to each other your team makes decisions on incomplete signals and misses the revenue leaks hiding in plain sight."
+    talkingPoint: "Disconnected data is the silent killer of marketing ROI. When your CRM, MAP, and product analytics don't talk to each other your team makes decisions on incomplete signals and misses the revenue leaks hiding in plain sight.",
+    ctaType: "reply",
+    wordCount: "40 to 65",
+    openingStyle: "question",
+    reEngagementNote: "This is email 8 of 10. In one sentence, name the silence directly and confidently — something like 'I have sent a few notes without hearing back' — then pivot immediately to a single sharp question that invites a reply. No apology. No guilt."
   },
   {
     step: 9,
@@ -197,7 +229,11 @@ const SEQUENCE_MAP = [
     offer: "Content Analyzer Assessment",
     offerUrl: "https://www.pedowitzgroup.com/content-analyzer",
     angle: "content_performance",
-    talkingPoint: "Demand gen only scales when content, campaigns, and technology run as one system. TPG's managed services teams run the full motion: strategy, content, email, SEO, and paid so your team focuses on revenue not maintenance."
+    talkingPoint: "Demand gen only scales when content, campaigns, and technology run as one system. TPG's managed services teams run the full motion: strategy, content, email, SEO, and paid so your team focuses on revenue not maintenance.",
+    ctaType: "meeting",
+    wordCount: "40 to 65",
+    openingStyle: "question",
+    reEngagementNote: null
   },
   {
     step: 10,
@@ -207,9 +243,49 @@ const SEQUENCE_MAP = [
     offer: "Revenue Marketing eGuide",
     offerUrl: "https://www.pedowitzgroup.com/revenue-marketing-eguide",
     angle: "pipeline_predictability",
-    talkingPoint: "This is the direct close. Make a warm specific ask for 20 minutes and tell the prospect exactly what they will get from the conversation: a candid assessment of where their marketing motion has gaps and what it would take to fix them."
+    talkingPoint: "This is the direct close. Make a warm specific ask for 20 minutes and tell the prospect exactly what they will get from the conversation: a candid assessment of where their marketing motion has gaps and what it would take to fix them.",
+    ctaType: "meeting",
+    wordCount: "40 to 65",
+    openingStyle: "question",
+    reEngagementNote: "This is the final email — email 10 of 10. Name that directly. Tell them this is your last note. Make the ask warm and specific: 20 minutes, and tell them exactly what they will walk away with. No guilt, no pressure. Just a clean, confident close."
   }
 ];
+
+// =============================
+// CTA INSTRUCTIONS BY TYPE
+// =============================
+function buildCtaInstructions(ctaType, stepConfig) {
+  if (ctaType === 'meeting') {
+    return `CALL TO ACTION — MEETING:
+Ask for 20 minutes on the calendar. Tell the prospect exactly what they will get from that conversation. Make the ask feel specific and earned, not generic.
+Calendar link (use a single word or short phrase as the anchor):
+<a href="https://meetings.hubspot.com/jeff-pedowitz" style="font-weight:bold;text-decoration:underline;color:#A2CF23;">[word or phrase]</a>
+
+Also include ONE single-word hyperlink to the featured service:
+<a href="${stepConfig.serviceUrl}" style="font-weight:bold;text-decoration:underline;color:#A2CF23;">[word]</a>`;
+  }
+
+  if (ctaType === 'content') {
+    return `CALL TO ACTION — CONTENT (NO MEETING ASK):
+Do NOT ask for a meeting in this email. Instead, drive to the featured offer below as a pure value drop. One sentence framing why it is useful, then the link. No pitch attached to it.
+Offer: ${stepConfig.offer}
+Offer link (use a short natural phrase as the anchor):
+<a href="${stepConfig.offerUrl}" style="font-weight:bold;text-decoration:underline;color:#A2CF23;">[short phrase]</a>
+
+Also include ONE single-word hyperlink to the featured service:
+<a href="${stepConfig.serviceUrl}" style="font-weight:bold;text-decoration:underline;color:#A2CF23;">[word]</a>`;
+  }
+
+  if (ctaType === 'reply') {
+    return `CALL TO ACTION — REPLY REQUEST:
+Do NOT ask for a meeting. Do NOT link to an offer. Instead, end the email with ONE single direct question that invites a one-sentence reply. The question should be specific to their industry or situation, not generic. Make it easy to answer. Examples: "Is attribution the biggest gap right now or is it something else?" or "What does your current RevOps setup look like?" Pick the question that fits this specific prospect.
+
+Also include ONE single-word hyperlink to the featured service somewhere naturally in the body:
+<a href="${stepConfig.serviceUrl}" style="font-weight:bold;text-decoration:underline;color:#A2CF23;">[word]</a>`;
+  }
+
+  return '';
+}
 
 // =============================
 // INDUSTRY PERSONA LIBRARY
@@ -711,7 +787,6 @@ async function hubspotPatch(url, data, retries = 3) {
       return;
     } catch (err) {
       if (i === retries - 1) {
-        // Log full HubSpot error body before throwing
         if (err.response?.data) {
           console.error(`HubSpot error detail:`, JSON.stringify(err.response.data));
         }
@@ -1027,7 +1102,7 @@ function removeDashes(text) {
 }
 function removeSignature(text) {
   return text
-    .replace(/\n+\s*(Jeff|Scott|Pedowitz)\s*$/i, '')
+    .replace(/\n+\s*(Jeff|Pedowitz)\s*$/i, '')
     .replace(/\n+\s*(Best|Best regards|Thanks|Thank you|Regards|Sincerely|Cheers|Warm regards)[^\n]*/gi, '')
     .trim();
 }
@@ -1058,6 +1133,7 @@ async function runClaude(job) {
     hs_analytics_num_page_views = ''
   } = job;
 
+  const salutation = firstname.trim() || 'Hi there';
   const persona = resolveIndustryPersona(industry);
 
   const IntentContext = hs_intent_signals_enabled === "true"
@@ -1085,7 +1161,7 @@ async function runClaude(job) {
     }
   }
 
-  // Prior emails — uses corrected property prefix
+  // Prior emails
   const priorEmailsText = [];
   for (let i = 1; i < SEQUENCE_STEP; i++) {
     const field = job[`industry_ai_nurture_claude_text_em${i}`];
@@ -1108,8 +1184,12 @@ async function runClaude(job) {
   const painIndex = (SEQUENCE_STEP - 1) % persona.pains.length;
   const primaryPain = persona.pains[painIndex];
 
+  const openingStyleInstruction = stepConfig.openingStyle === 'question'
+    ? `OPENING STYLE: The very first line after "${salutation}," MUST be a direct question. Not an observation. A question. Make it specific to ${company} or their industry situation. Questions create engagement. Examples: "Quick question for you." or "How is [specific challenge] showing up for your team right now?" Then follow with your context and value.`
+    : `OPENING STYLE: The very first line after "${salutation}," MUST be a specific observation about ${company} or their situation. Not the industry generally. This company specifically.`;
+
   const openingIntelligence = `
-OPENING INTELLIGENCE — USE THIS TO WRITE THE FIRST SENTENCE:
+OPENING INTELLIGENCE — USE THIS TO WRITE THE FIRST LINE:
 
 Priority order (use the highest-quality signal available):
 
@@ -1128,13 +1208,16 @@ ${behavioralContext.trim()}
 5. INDUSTRY OPENING HOOKS (last resort):
 ${persona.openingHooks.map((h, i) => `${i + 1}. ${h}`).join('\n')}
 
-OPENING RULE: The very first sentence after "${firstname}," MUST reference something specific about ${company} or their situation. Not the industry generally. This company specifically.
-
-GOOD: "With ${company} rolling out [specific initiative], the pressure on your marketing team to show pipeline contribution from that investment must be real right now."
-BAD: "As a leader in the ${industry} space, you're likely facing..." — too generic, could be sent to anyone.
+${openingStyleInstruction}
 `.trim();
 
-  const userContent = `You are Jeff Pedowitz, founder and CEO of The Pedowitz Group, writing EMAIL ${SEQUENCE_STEP} of 10 in a personalized outbound nurture sequence to ${firstname} at ${company}.
+  const ctaInstructions = buildCtaInstructions(stepConfig.ctaType, stepConfig);
+
+  const reEngagementSection = stepConfig.reEngagementNote
+    ? `RE-ENGAGEMENT INSTRUCTION:\n${stepConfig.reEngagementNote}`
+    : '';
+
+  const userContent = `You are Jeff Pedowitz, founder and CEO of The Pedowitz Group (TPG), writing EMAIL ${SEQUENCE_STEP} of 10 in a personalized outbound nurture sequence to ${salutation} at ${company}.
 
 The Pedowitz Group (TPG) is THE Revenue Marketing™ consulting firm. 1,300+ client engagements. $25B+ in marketing-sourced revenue generated. TPG's five service pillars:
 1. AI SERVICES: AI Roadmap Accelerator, AI Agents and Automation, Marketing Operations Automation, AI-Driven Personalization, Data and Decision Intelligence
@@ -1190,37 +1273,41 @@ ${persona.toneNote}
 PRIOR EMAILS — DO NOT REPEAT ANYTHING FROM THESE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ${priorEmailsBlock}
+${reEngagementSection ? `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${reEngagementSection}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━` : ''}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 WRITE THE EMAIL
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 FORMAT:
 - Subject: 8 words or fewer. No dashes or hyphens.
-- Salutation on its own line: "${firstname},"
+- Salutation on its own line: "${salutation},"
 - One blank line after salutation.
-- Body: 75 to 110 words. Short paragraphs separated by ONE blank line.
+- Body: ${stepConfig.wordCount} words. Short paragraphs separated by ONE blank line.
 - No bullets. No signature. No sign-off.
 - HTML-safe plain text. <a> tags only for links.
 - Zero dashes (— or – or -). Zero underscores. Zero markdown.
 
 VOICE:
-- Jeff typed this in 3 minutes between client calls. Direct. Real. Not polished.
-- First sentence must be specific to ${company}. Not the industry. THIS company.
-- One industry benchmark stat woven naturally into the prose. Not prefaced with "According to."
-${SEQUENCE_STEP === 10 ? '- This is email 10 of 10. Direct warm ask for 20 minutes. Tell them exactly what they will get: a candid assessment of where their marketing motion has gaps and what it would take to fix them. This is the close.' : ''}
+- Jeff did a little research before writing this. It should feel like it.
+- If there is company news, a blog post, a leadership change, or any specific signal available — open with "I saw", "I noticed", or "I came across" to make it feel like Jeff actually looked them up.
+- After the opening, write like a smart peer talking to another smart peer. Short sentences. Contractions. Real.
+- It's fine to start a sentence with "And" or "But" for rhythm.
+- Never use: leverage, impactful, holistic, synergy, robust, utilize, cutting-edge, or any word that belongs in a press release.
+- Never use the word "agents" or "AI agents" as a standalone term. Instead describe what the technology actually does in plain language. Examples: "automated systems that watch for buying signals and route the right follow-up", "workflows that score intent and surface the right contacts before your team has to go looking", "systems that connect your data and trigger the right action automatically." The reader should understand what it does without needing to know what it's called.
+- One industry benchmark stat woven naturally into the prose. Drop it casually, the way you'd mention it in conversation. Not prefaced with "According to."
+- The CTA should feel like a genuine ask, not a sales close. "Worth 20 minutes?" is better than "I'd love to schedule time to discuss."
 
 HARD RULES:
 - NEVER reuse any idea, framing, or angle from the prior emails above.
 - Subject line MUST be structurally and semantically different from all prior subjects.
 - SPECIFICITY TEST: If this email could go to a different company in a different industry with just a name swap, it has FAILED.
 - No fabricated company news. No clinical claims for healthcare. No investment advice for financial services.
+- Never use the word "AI" in the subject line.
 
-REQUIRED LINKS (both must appear):
-1. ONE single-word hyperlink to the featured service:
-   <a href="${stepConfig.serviceUrl}" style="font-weight:bold;text-decoration:underline;color:#A2CF23;">[word]</a>
-
-2. ONE calendar CTA — a single word or short phrase:
-   <a href="https://meetings.hubspot.com/jeff-pedowitz" style="font-weight:bold;text-decoration:underline;color:#A2CF23;">[word or phrase]</a>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CALL TO ACTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${ctaInstructions}
 
 OUTPUT (exactly this format, nothing else):
 Subject: <subject line>
@@ -1240,7 +1327,7 @@ Body:
         model: "claude-sonnet-4-20250514",
         max_tokens: 1500,
         temperature: 0.75,
-        system: `You are Jeff Pedowitz, founder and CEO of The Pedowitz Group. You are writing a personal outbound email to a marketing leader. Your single most important job is this: the first sentence must reference something real and specific about the recipient's company. Not their industry. Their company. If you have news, a blog post, an award, or a company description to work from, use it. If you don't, use the most specific industry hook available. After the opening, the rest of the email should feel like you understand their exact situation better than anyone who would send them a generic outreach email. Short sentences. Real observations. No corporate polish. No frameworks introduced by name. No sign-off.`,
+        system: `You are Jeff Pedowitz, founder and CEO of The Pedowitz Group. You did a little homework on this person before writing. You checked their company news, their blog, maybe their LinkedIn. Now you're writing them a short note — the way a smart, confident peer would, not a polished executive. Contractions are fine. Incomplete sentences are fine. Starting with "And" or "But" is fine. When you have a company signal to work from, open with "I saw", "I noticed", or "I came across" to make it feel researched and specific. After the opening, write like you're talking to someone you already know a little. Direct. Warm but not soft. No corporate polish. No sign-off. Never use the word AI in the subject line.`,
         messages: [{ role: "user", content: userContent }]
       },
       {
@@ -1306,7 +1393,6 @@ async function updateStatus(contactId, status) {
       { properties: { ai_email_step_status: status } }
     );
   } catch (err) {
-    // Non-fatal — property may not exist, log and continue
     console.log(`ℹ️ Status update skipped for ${contactId}: ${err.response?.data?.message || err.message}`);
   }
 }
