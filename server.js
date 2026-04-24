@@ -1182,10 +1182,10 @@ function removeDashes(text) {
 }
 function removeMarkdown(text) {
   return text
-    .replace(/**(.+?)**/g, '$1')
-    .replace(/*(.+?)*/g, '$1')
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/\*(.+?)\*/g, '$1')
     .replace(/__(.+?)__/g, '$1')
-    .replace(/_([^_s][^_]*[^_s])_/g, '$1')
+    .replace(/_([^_\s][^_]*[^_\s])_/g, '$1')
     .replace(/`(.+?)`/g, '$1')
     .trim();
 }
