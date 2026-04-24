@@ -1182,11 +1182,11 @@ function removeDashes(text) {
 }
 function removeMarkdown(text) {
   return text
-    .replace(/\*\*(.+?)\*\*/g, '$1')
-    .replace(/\*(.+?)\*/g, '$1')
-    .replace(/__(.+?)__/g, '$1')
-    .replace(/_([^_\s][^_]*[^_\s])_/g, '$1')
-    .replace(/`(.+?)`/g, '$1')
+    .replace(/\*\*(.+?)\*\*/g, '$1')                                    // **bold**
+    .replace(/\*(.+?)\*/g, '$1')                                         // *italic*
+    .replace(/__([^_\n]+?)__/g, '$1')                                    // __bold__
+    .replace(/(?<![a-zA-Z0-9])_([^_\n]+?)_(?![a-zA-Z0-9])/g, '$1')    // _italic_ (not mid-word)
+    .replace(/`(.+?)`/g, '$1')                                           // `code`
     .trim();
 }
 function removeSignature(text) {
