@@ -108,6 +108,14 @@ const BLOCKED_DOMAINS = new Set([
 // =============================
 // TPG 10-STEP SEQUENCE MAP
 // =============================
+// IMPROVEMENTS APPLIED:
+//   - Steps 1-4: talkingPoints rewritten to problem-first framing
+//   - Step 1: ctaType changed from 'meeting' to 'reply' (cold open; earn the ask)
+//   - Steps 1-2: word count tightened to 60-85 (forces sharper writing)
+//   - Steps 3,5,7,9: aeoContext added (buyer visibility / AEO angle)
+//   - All other steps: aeoContext = null (suppresses AEO in prompt)
+//   - avoidPhrases added per step (enforced in prompt, prevents clichés)
+// =============================
 const SEQUENCE_MAP = [
   {
     step: 1,
@@ -117,11 +125,16 @@ const SEQUENCE_MAP = [
     offer: "AI Agent Discovery Tool",
     offerUrl: "https://www.pedowitzgroup.com/agentic-ai",
     angle: "pipeline_predictability",
-    talkingPoint: "Deploy intelligent agents across marketing, sales, and support to automate workflows, personalize interactions, and surface revenue signals before your team even knows to look for them.",
-    ctaType: "meeting",
-    wordCount: "75 to 110",
+    // UPDATED: problem-first — lead with the waste, not the capability
+    talkingPoint: "Your sales team is spending 40% of their time on work that has nothing to do with selling: CRM updates, chasing signals, sitting in pipeline reviews where nobody agrees on the numbers. That's not a people problem. It's a systems problem — and the system isn't built to run itself yet. The marketing and sales teams that are pulling ahead right now have automated the operational overhead so their people can stay on revenue.",
+    // UPDATED: reply CTA for cold open — earn the meeting ask at step 2
+    ctaType: "reply",
+    wordCount: "60 to 85",
     openingStyle: "observation",
-    reEngagementNote: null
+    reEngagementNote: null,
+    // No AEO — suppress explicitly
+    aeoContext: null,
+    avoidPhrases: ["execution to strategy", "unlock", "revenue engine", "scale your", "transform your", "holistic", "leverage", "robust", "cutting-edge", "impactful", "synergy", "utilize"]
   },
   {
     step: 2,
@@ -131,11 +144,15 @@ const SEQUENCE_MAP = [
     offer: "AI Readiness Assessment",
     offerUrl: "https://www.pedowitzgroup.com/ai-assessment",
     angle: "martech_roi",
-    talkingPoint: "Before investing deeper in AI tools, most marketing leaders need a clear prioritized roadmap that connects AI investments to revenue outcomes rather than experiments that fade after 90 days.",
+    // UPDATED: leads with the waste/sunk cost angle, not the solution
+    talkingPoint: "Most companies are running 15 to 20 MarTech tools and getting real value from maybe 8. The rest were bought with a business case that made sense at the time. Now they're just contract renewals nobody wants to own. The answer isn't more tools. It's a prioritized roadmap that starts with what you already have and connects every investment to a revenue outcome — not a 90-day experiment that fades when the champion leaves.",
     ctaType: "meeting",
-    wordCount: "75 to 110",
+    wordCount: "60 to 85",
     openingStyle: "observation",
-    reEngagementNote: null
+    reEngagementNote: null,
+    // No AEO — suppress explicitly
+    aeoContext: null,
+    avoidPhrases: ["execution to strategy", "unlock", "transform", "holistic", "leverage", "robust", "cutting-edge", "impactful", "synergy", "utilize", "journey", "revenue engine"]
   },
   {
     step: 3,
@@ -145,11 +162,17 @@ const SEQUENCE_MAP = [
     offer: "Revenue Marketing Maturity Assessment",
     offerUrl: "https://www.pedowitzgroup.com/revenue-marketing-maturity-assessment",
     angle: "lead_quality",
-    talkingPoint: "Most buyers now complete 70 to 80% of their research before ever talking to sales. AI-driven personalization lets you meet them in the moment with the right message on the right channel before the competition does.",
+    // UPDATED: sharper stat angle, problem-first
+    talkingPoint: "Your best prospects are doing their research right now and your marketing team has no idea. They're reading your competitors' case studies, comparing positioning, and forming opinions — and they will never fill out a form. By the time they talk to sales, 70 to 80% of the decision is already made. The companies winning that invisible research phase are the ones whose content shows up with the right answer at the right moment.",
     ctaType: "content",
     wordCount: "40 to 65",
     openingStyle: "question",
-    reEngagementNote: null
+    reEngagementNote: null,
+    // AEO PRIMARY: buyer visibility is the thesis of this email
+    aeoContext: `AEO / BUYER VISIBILITY ANGLE (weave into body naturally — do NOT open with it, do NOT make it a standalone paragraph):
+Something has shifted in how buyers research vendors. They're not just Googling anymore. They're asking ChatGPT, Perplexity, and Google's AI Overview to summarize the landscape for them — and the brand that isn't showing up in those AI-generated answers doesn't exist for that buyer segment. This is the visibility gap that personalisation is meant to close, but most marketing teams haven't connected these two problems yet.
+Weave this as an observation inside the body — one or two sentences — that sharpens the pain of invisible buyers. Do NOT use the terms "AEO", "AXO", or "answer engine optimization". Describe the phenomenon in plain language so the prospect feels the gap before they hear any solution.`,
+    avoidPhrases: ["70 to 80 percent", "meet them in the moment", "right message right channel", "unlock", "transform", "leverage", "journey", "holistic", "robust", "cutting-edge", "impactful", "synergy", "utilize"]
   },
   {
     step: 4,
@@ -159,11 +182,15 @@ const SEQUENCE_MAP = [
     offer: "AI Project Prioritization Tool",
     offerUrl: "https://www.pedowitzgroup.com/tpg-ai-project-prioritization",
     angle: "team_capacity",
-    talkingPoint: "Marketing ops teams are buried in manual work that AI should be doing: lead routing, data hygiene, segmentation, campaign QA. When that overhead disappears your team shifts from execution to strategy.",
+    // UPDATED: quantified waste angle, no 'execution to strategy' cliché, explicit differentiation from step 1
+    talkingPoint: "This email is about the hidden labor cost inside marketing ops — not pipeline signals (covered in email 1), but the manual work that happens before any campaign touches a prospect: lead routing, data hygiene, segmentation, campaign QA. Most marketing ops teams are running at 120% capacity doing work that should not require a human. The question is how much of that overhead is actually scheduled to go away — and what your team could do with that time instead.",
     ctaType: "meeting",
     wordCount: "40 to 65",
     openingStyle: "question",
-    reEngagementNote: null
+    reEngagementNote: null,
+    // No AEO — suppress explicitly
+    aeoContext: null,
+    avoidPhrases: ["execution to strategy", "from cost center to", "unlock", "transform", "leverage", "holistic", "robust", "cutting-edge", "impactful", "synergy", "utilize", "revenue engine", "scale your", "journey"]
   },
   {
     step: 5,
@@ -177,7 +204,12 @@ const SEQUENCE_MAP = [
     ctaType: "content",
     wordCount: "40 to 65",
     openingStyle: "question",
-    reEngagementNote: "This is email 5 of 10. Acknowledge in one confident sentence — not apologetically — that you have sent a few notes and have not heard back. Then move on without dwelling on it. Do not apologize. Do not beg."
+    reEngagementNote: "This is email 5 of 10. Acknowledge in one confident sentence — not apologetically — that you have sent a few notes and have not heard back. Then move on without dwelling on it. Do not apologize. Do not beg.",
+    // AEO SUPPORTING: one sentence only — light reference, not thesis
+    aeoContext: `AEO / BUYER VISIBILITY (supporting mention only — one sentence maximum, do NOT develop this further):
+Weave in a single observation somewhere in the body that the revenue marketing leaders pulling ahead are thinking about AI channel presence alongside traditional funnel metrics — meaning their content is structured to appear in AI-generated answers, not just search results. One sentence. It should land as an aside, not a pivot.
+Do NOT use the terms "AEO", "AXO", or "answer engine optimization". Describe it in plain language.`,
+    avoidPhrases: ["unlock", "transform", "leverage", "holistic", "robust", "cutting-edge", "impactful", "synergy", "utilize", "journey", "revenue engine", "cost center"]
   },
   {
     step: 6,
@@ -191,7 +223,10 @@ const SEQUENCE_MAP = [
     ctaType: "reply",
     wordCount: "40 to 65",
     openingStyle: "question",
-    reEngagementNote: null
+    reEngagementNote: null,
+    // Suppress AEO entirely in this step
+    aeoContext: null,
+    avoidPhrases: ["unlock", "transform", "leverage", "holistic", "robust", "cutting-edge", "impactful", "synergy", "utilize", "journey", "AI search", "AEO", "AXO", "answer engine", "buyer visibility"]
   },
   {
     step: 7,
@@ -205,7 +240,13 @@ const SEQUENCE_MAP = [
     ctaType: "content",
     wordCount: "40 to 65",
     openingStyle: "question",
-    reEngagementNote: null
+    reEngagementNote: null,
+    // AEO PRIMARY: HubSpot/MarTech config is directly connected to AEO readiness
+    aeoContext: `AEO / BUYER VISIBILITY ANGLE (weave into body naturally — this is the second-strongest AEO step after email 3):
+Buyers are increasingly starting their vendor research in AI tools, not search engines. ChatGPT, Perplexity, and Google's AI Overview are summarizing the landscape for them — and whether a brand shows up in those answers depends heavily on how its content is structured, how its data is organized, and how well its MarTech stack surfaces the right signals. Most HubSpot configurations are not built for this.
+CONDITIONAL NAME DROP: If the prospect's intent signals are ACTIVE or they have visited the TPG website 5+ times, you may name the AXO Diagnostic specifically: "TPG's AXO diagnostic scores how visible your brand is across the major AI answer engines and what it would take to improve it." Link: https://www.pedowitzgroup.com/axo. Otherwise, describe the visibility gap without naming TPG's product — let the concept land first.
+Do NOT use the term "AEO" or "answer engine optimization" in the email body.`,
+    avoidPhrases: ["unlock", "transform", "leverage", "holistic", "robust", "cutting-edge", "impactful", "synergy", "utilize", "revenue engine", "journey"]
   },
   {
     step: 8,
@@ -219,7 +260,10 @@ const SEQUENCE_MAP = [
     ctaType: "reply",
     wordCount: "40 to 65",
     openingStyle: "question",
-    reEngagementNote: "This is email 8 of 10. In one sentence, name the silence directly and confidently — something like 'I have sent a few notes without hearing back' — then pivot immediately to a single sharp question that invites a reply. No apology. No guilt."
+    reEngagementNote: "This is email 8 of 10. In one sentence, name the silence directly and confidently — something like 'I have sent a few notes without hearing back' — then pivot immediately to a single sharp question that invites a reply. No apology. No guilt.",
+    // Suppress AEO entirely in this step
+    aeoContext: null,
+    avoidPhrases: ["unlock", "transform", "leverage", "holistic", "robust", "cutting-edge", "impactful", "synergy", "utilize", "journey", "AI search", "AEO", "AXO", "answer engine", "buyer visibility"]
   },
   {
     step: 9,
@@ -233,7 +277,12 @@ const SEQUENCE_MAP = [
     ctaType: "meeting",
     wordCount: "40 to 65",
     openingStyle: "question",
-    reEngagementNote: null
+    reEngagementNote: null,
+    // AEO SUPPORTING: one sentence — demand gen is the most disrupted channel
+    aeoContext: `AEO / BUYER VISIBILITY (supporting mention only — one sentence maximum, placed naturally in the body):
+Weave in a single observation that demand gen assumptions are shifting — paid and organic strategies assume buyers are searching, but more of them are asking AI tools to summarize the category for them. This means content that doesn't surface in AI-generated answers is invisible to a growing segment of the market. One sentence. It should feel like a sharp aside, not a pivot point.
+Do NOT use the terms "AEO", "AXO", or "answer engine optimization". Plain language only.`,
+    avoidPhrases: ["unlock", "transform", "leverage", "holistic", "robust", "cutting-edge", "impactful", "synergy", "utilize", "revenue engine", "journey"]
   },
   {
     step: 10,
@@ -247,7 +296,10 @@ const SEQUENCE_MAP = [
     ctaType: "meeting",
     wordCount: "40 to 65",
     openingStyle: "question",
-    reEngagementNote: "This is the final email — email 10 of 10. Name that directly. Tell them this is your last note. Make the ask warm and specific: 20 minutes, and tell them exactly what they will walk away with. No guilt, no pressure. Just a clean, confident close."
+    reEngagementNote: "This is the final email — email 10 of 10. Name that directly. Tell them this is your last note. Make the ask warm and specific: 20 minutes, and tell them exactly what they will walk away with. No guilt, no pressure. Just a clean, confident close.",
+    // Suppress AEO entirely in this step
+    aeoContext: null,
+    avoidPhrases: ["unlock", "transform", "leverage", "holistic", "robust", "cutting-edge", "impactful", "synergy", "utilize", "journey", "AI search", "AEO", "AXO", "answer engine", "buyer visibility"]
   }
 ];
 
@@ -1161,13 +1213,19 @@ async function runClaude(job) {
     }
   }
 
-  // Prior emails
+  // Prior emails — pass full text for deduplication AND collect prior subjects
   const priorEmailsText = [];
+  const priorSubjects = [];
   for (let i = 1; i < SEQUENCE_STEP; i++) {
-    const field = job[`industry_ai_nurture_claude_text_em${i}`];
-    if (field) priorEmailsText.push(`EMAIL ${i}:\n${field}`);
+    const bodyField = job[`industry_ai_nurture_claude_text_em${i}`];
+    const subjectField = job[`industry_ai_nurture_subject_line_em${i}`];
+    if (bodyField) priorEmailsText.push(`EMAIL ${i}:\n${bodyField}`);
+    if (subjectField) priorSubjects.push(`Email ${i}: "${subjectField}"`);
   }
   const priorEmailsBlock = priorEmailsText.length ? priorEmailsText.join("\n\n---\n\n") : "N/A";
+  const priorSubjectsBlock = priorSubjects.length
+    ? `PRIOR SUBJECT LINES (your new subject MUST NOT start with the same first word as any of these, and must be structurally and semantically distinct from all of them):\n${priorSubjects.join('\n')}`
+    : "No prior subject lines yet.";
 
   let companyNewsBlock = null;
   let companyContentBlock = null;
@@ -1205,7 +1263,7 @@ ${description || "Not provided."}
 4. BEHAVIORAL SIGNALS:
 ${behavioralContext.trim()}
 
-5. INDUSTRY OPENING HOOKS (last resort):
+5. INDUSTRY OPENING HOOKS (last resort — if no company-specific signal exists, open with a counterintuitive or second-level observation about this industry, not the most obvious pain):
 ${persona.openingHooks.map((h, i) => `${i + 1}. ${h}`).join('\n')}
 
 ${openingStyleInstruction}
@@ -1215,6 +1273,21 @@ ${openingStyleInstruction}
 
   const reEngagementSection = stepConfig.reEngagementNote
     ? `RE-ENGAGEMENT INSTRUCTION:\n${stepConfig.reEngagementNote}`
+    : '';
+
+  // AEO block — present for steps 3, 5, 7, 9; explicitly suppressed for all others
+  const aeoBlock = stepConfig.aeoContext
+    ? `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+AEO / BUYER VISIBILITY CONTEXT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${stepConfig.aeoContext.replace(/\$\{company\}/g, company).replace(/\$\{pageViews\}/g, String(pageViews))}
+
+IMPORTANT: Weave this in naturally. Do not lead with it. Do not make it a standalone paragraph. Do not use the phrases "answer engine optimization" or "AEO" unless the step config above explicitly permits it. The insight should land as an observation, not a product pitch.`
+    : `(AEO SUPPRESSED FOR THIS STEP: Do not mention AI search, AEO, AXO, answer engine optimization, or buyer visibility in AI tools in this email. These topics appear in other steps and repeating them here will make the sequence feel redundant.)`;
+
+  // Banned phrases for this step
+  const avoidPhrasesBlock = stepConfig.avoidPhrases && stepConfig.avoidPhrases.length
+    ? `BANNED PHRASES — never use any of these in this email (they are overused in AI-generated marketing emails and will make this read as generic):\n${stepConfig.avoidPhrases.map(p => `- "${p}"`).join('\n')}`
     : '';
 
   const userContent = `You are Jeff Pedowitz, founder and CEO of The Pedowitz Group (TPG), writing EMAIL ${SEQUENCE_STEP} of 10 in a personalized outbound nurture sequence to ${salutation} at ${company}.
@@ -1273,7 +1346,13 @@ ${persona.toneNote}
 PRIOR EMAILS — DO NOT REPEAT ANYTHING FROM THESE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ${priorEmailsBlock}
+
+${priorSubjectsBlock}
 ${reEngagementSection ? `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${reEngagementSection}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━` : ''}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${aeoBlock}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 WRITE THE EMAIL
@@ -1292,14 +1371,14 @@ VOICE:
 - If there is company news, a blog post, a leadership change, or any specific signal available — open with "I saw", "I noticed", or "I came across" to make it feel like Jeff actually looked them up.
 - After the opening, write like a smart peer talking to another smart peer. Short sentences. Contractions. Real.
 - It's fine to start a sentence with "And" or "But" for rhythm.
-- Never use: leverage, impactful, holistic, synergy, robust, utilize, cutting-edge, or any word that belongs in a press release.
 - Never use the word "agents" or "AI agents" as a standalone term. Instead describe what the technology actually does in plain language. Examples: "automated systems that watch for buying signals and route the right follow-up", "workflows that score intent and surface the right contacts before your team has to go looking", "systems that connect your data and trigger the right action automatically." The reader should understand what it does without needing to know what it's called.
 - One industry benchmark stat woven naturally into the prose. Drop it casually, the way you'd mention it in conversation. Not prefaced with "According to."
 - The CTA should feel like a genuine ask, not a sales close. "Worth 20 minutes?" is better than "I'd love to schedule time to discuss."
 
+${avoidPhrasesBlock ? avoidPhrasesBlock + '\n' : ''}
 HARD RULES:
 - NEVER reuse any idea, framing, or angle from the prior emails above.
-- Subject line MUST be structurally and semantically different from all prior subjects.
+- Subject line MUST be structurally and semantically different from all prior subjects (see prior subjects list above). Must not start with the same first word as any prior subject.
 - SPECIFICITY TEST: If this email could go to a different company in a different industry with just a name swap, it has FAILED.
 - No fabricated company news. No clinical claims for healthcare. No investment advice for financial services.
 - Never use the word "AI" in the subject line.
@@ -1367,7 +1446,7 @@ Body:
 async function writeResults(contactId, { subject, bodyText }, sequenceStep = 1) {
   const bodyHtml = bodyText
     .replace(/\r\n/g, "\n")
-    .split(/\n{2,}/)
+    .split(/\n{2+}/)
     .map(p => `<p style="margin:0 0 16px;">${p.replace(/\n/g, "<br>")}</p>`)
     .join("\n");
 
